@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "plugin-manager",
+  "name": "Plugin Manager",
+  "version": "1.0.0",
+  "author": "Daniel Bohry",
+  "license": "MIT",
+  "description": "List every shell plugin with an enable/disable switch, plus a button to restart the shell.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Plugin Manager",
+    "description": "List every shell plugin with an enable/disable switch, plus a button to restart the shell.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
