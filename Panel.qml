@@ -18,6 +18,15 @@ Panel {
 
   // Raw rows from `omarchy-plugin-list --json`, sorted by display name.
   property var plugins: []
+  property string filterText: ""
+  readonly property var filteredPlugins: {
+    var needle = filterText.trim().toLowerCase()
+    if (needle === "") return plugins
+    return plugins.filter(function(p) {
+      return String(p.name).toLowerCase().indexOf(needle) >= 0
+        || String(p.id).toLowerCase().indexOf(needle) >= 0
+    })
+  }
   readonly property bool busy: actionProc.running || listProc.running
   property string focusSection: "restart"  // "restart" | "list"
   property int selectedIndex: -1
@@ -46,26 +55,26 @@ Panel {
   }
 
   function ensureCursor() {
-    if (root.plugins.length === 0) { focusSection = "restart"; return }
+    if (root.filteredPlugins.length === 0) { focusSection = "restart"; return }
     if (focusSection === "list") {
       if (selectedIndex < 0) selectedIndex = 0
-      if (selectedIndex >= root.plugins.length) selectedIndex = root.plugins.length - 1
+      if (selectedIndex >= root.filteredPlugins.length) selectedIndex = root.filteredPlugins.length - 1
     }
   }
 
   function moveCursor(dy) {
     if (dy === 0) return
     if (focusSection === "restart") {
-      if (dy > 0 && root.plugins.length > 0) { focusSection = "list"; selectedIndex = 0 }
+      if (dy > 0 && root.filteredPlugins.length > 0) { focusSection = "list"; selectedIndex = 0 }
       return
     }
     if (dy < 0 && selectedIndex <= 0) { focusSection = "restart"; return }
-    selectedIndex = Math.max(0, Math.min(root.plugins.length - 1, selectedIndex + dy))
+    selectedIndex = Math.max(0, Math.min(root.filteredPlugins.length - 1, selectedIndex + dy))
   }
 
   function activateCursor() {
     if (focusSection === "restart") restartShell()
-    else if (selectedIndex >= 0 && selectedIndex < root.plugins.length) togglePlugin(root.plugins[selectedIndex])
+    else if (selectedIndex >= 0 && selectedIndex < root.filteredPlugins.length) togglePlugin(root.filteredPlugins[selectedIndex])
   }
 
   implicitWidth: button.implicitWidth
@@ -74,9 +83,11 @@ Panel {
   onOpenedChanged: if (opened) {
     focusSection = "restart"
     selectedIndex = -1
+    filterText = ""
     refresh()
     Qt.callLater(function() { keyCatcher.forceActiveFocus() })
   }
+  onFilteredPluginsChanged: ensureCursor()
 
   Process {
     id: listProc
@@ -166,10 +177,20 @@ Panel {
             foreground: root.foreground
           }
 
-          Text {
-            visible: root.plugins.length === 0
+          TextField {
+            id: searchField
             width: parent.width
-            text: root.busy ? "Loading plugins…" : "No plugins found."
+            placeholderText: "Filter plugins…"
+            foreground: root.foreground
+            accent: root.accent
+            text: root.filterText
+            onTextChanged: root.filterText = text
+          }
+
+          Text {
+            visible: root.filteredPlugins.length === 0
+            width: parent.width
+            text: root.busy ? "Loading plugins…" : (root.filterText === "" ? "No plugins found." : "No plugins match \"" + root.filterText + "\".")
             color: root.dim
             font.family: root.fontFamily
             font.pixelSize: Style.font.body
@@ -181,7 +202,7 @@ Panel {
             spacing: Style.space(6)
 
             Repeater {
-              model: root.plugins
+              model: root.filteredPlugins
 
               PluginRow {
                 required property var modelData
