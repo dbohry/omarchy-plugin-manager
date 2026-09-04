@@ -1,7 +1,7 @@
 # Plugin Manager
 
 Bar plugin that lists every installed Omarchy shell plugin with an
-enable/disable switch, plus a button to restart the shell.
+enable/disable switch.
 
 <img width="593" height="867" alt="image" src="https://github.com/user-attachments/assets/3ed7799d-7998-4782-bdb8-cd94b8a6c7b9" />
 
@@ -32,3 +32,6 @@ omarchy bar move plugin-manager --section left|center|right
 ```bash
 omarchy plugin remove plugin-manager
 ```
+
+## License
+[MIT](LICENSE)
