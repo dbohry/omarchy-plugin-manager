@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.Commons
+import qs.Commons as Commons
 import qs.Ui
 
 Panel {
@@ -10,8 +11,8 @@ Panel {
   moduleName: "plugin-manager"
   ipcTarget: "plugin-manager"
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
-  readonly property color accent: Color.accent
+  readonly property color foreground: bar ? bar.foreground : Commons.Color.foreground
+  readonly property color accent: Commons.Color.accent
   readonly property color dim: Qt.darker(foreground, 1.55)
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property string pluginIcon: String.fromCodePoint(0xf0431)
